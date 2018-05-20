@@ -3,7 +3,7 @@
 #include "TurnSignals.cpp"
 #include "PoliciaFreio.cpp"
 
-#include "Farol.cpp"
+#include "HeadLight.cpp"
 
 class Pinos
 {
@@ -45,7 +45,7 @@ TriggeredButton RightSignalButton;
 TriggeredButton LeftActionButton;
 TriggeredButton RightActionButton;
 
-Farol farol;
+HeadLight headLight;
 
 void setup() {
 
@@ -55,7 +55,7 @@ void setup() {
   RightActionButton.configure(Pinos::RightActionButton);
 
   policiafreio.configure(Pinos::LeftRed, Pinos::Blue, Pinos::RightRed);
-  farol.configure(Pinos::HeadLight);
+  headLight.configure(Pinos::HeadLight);
   turnSignals.configure(Pinos::LeftSignal, Pinos::RightSignal, Pinos::Buzzer);
 
 
@@ -93,7 +93,7 @@ void process()
 void output()
 {
   turnSignals.run();
-  farol.run();
+  headLight.run();
   policiafreio.run();
 }
 
@@ -154,18 +154,18 @@ void processaFarolPolicia() {
 
 void policeMode() {
   _mode = POLICE;
-  farol.flash();
+  headLight.flash();
   policiafreio.policeOn();
 }
 
 void lightsMode() {
   _mode = LIGHTS;
-  farol.on();
+  headLight.on();
   policiafreio.tailOn();
 }
 
 void offMode() {
   _mode = FAROL_OFF;
-  farol.off();
+  headLight.off();
   policiafreio.off();  
 }

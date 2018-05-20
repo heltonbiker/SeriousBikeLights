@@ -7,9 +7,9 @@ typedef enum {
     BLINK = 2
 };
 
-class Farol
+class HeadLight
 {
-	PwmPin _pino_farol;
+	PwmPin _pin;
 
     bool _lightState;
 
@@ -21,7 +21,7 @@ class Farol
 
 	public : void configure(byte pino)
 	{
-		_pino_farol.configure(pino);
+		_pin.configure(pino);
 	}
 
 
@@ -76,11 +76,11 @@ class Farol
     {
         if (_lightState)
         {
-            _pino_farol.on();
+            _pin.on();
         }
         else
         {
-            _pino_farol.off();
+            _pin.off();
         }        
     }
 };

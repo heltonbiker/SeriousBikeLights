@@ -9,7 +9,7 @@ void Button::configure(uint8_t pin)
     pinMode(_pin, INPUT_PULLUP);    
 }
 
-void Button::run()
-{
+// void Button::run()
+// {
     
-}
+// }
