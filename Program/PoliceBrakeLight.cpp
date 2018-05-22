@@ -2,7 +2,7 @@
 #include "PwmPin.h"
 
 
-class PoliciaFreio
+class PoliceBrakeLight
 {
     PwmPin _leftRedPin;
     PwmPin _bluePin;

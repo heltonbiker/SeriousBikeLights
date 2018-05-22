@@ -1,34 +1,15 @@
 #include "TriggeredButton.h"
 
 #include "TurnSignals.cpp"
-#include "PoliciaFreio.cpp"
+#include "PoliceBrakeLight.cpp"
 
 #include "HeadLight.cpp"
 
-class Pinos
-{
-  public:
-    static const byte LeftSignalButton = 1;
-    static const byte SpeedSensor = 2;
-    static const byte HeadLight = 3;
-    static const byte RightSignalButton = 4;
-    static const byte LeftSignal = 5;
-    static const byte RightSignal = 6;
-    static const byte Siren = 7;
-    static const byte Buzzer = 8;
-    static const byte LeftRed = 9;
-    static const byte Blue = 10;
-    static const byte RightRed = 11;
-    static const byte ModeButton = 12;
-    static const byte StatusLED = 13;
+#include "Pinout.cpp"
 
-    static const byte LightSensor = A1;
-    static const byte LeftActionButton = A2;
-    static const byte RightActionButton = A3;
-};
 
 typedef enum {
-  FAROL_OFF = 0,
+  LIGHTS_OFF = 0,
   LANTERN = 1,
   LIGHTS = 2,
   POLICE = 3
@@ -38,31 +19,39 @@ byte _mode = 0;
 
 TurnSignals turnSignals;
 
-PoliciaFreio policiafreio;
+PoliceBrakeLight policeBrakeLight;
 
 TriggeredButton LeftSignalButton;
 TriggeredButton RightSignalButton;
-TriggeredButton LeftActionButton;
-TriggeredButton RightActionButton;
+TriggeredButton ModeButton;
+TriggeredButton BrakeSensor;
+TriggeredButton HornButton;
 
 HeadLight headLight;
 
+
+// SpeedSensor (2)
+// SDA/SCL (A4, A5)
+// LightSensor (A1)
+// Horn (A3)
+// Siren (7)
+// StatusLedPin (13)
+
+
 void setup() {
 
-  LeftSignalButton.configure(Pinos::LeftSignalButton);
-  RightSignalButton.configure(Pinos::RightSignalButton);
-  LeftActionButton.configure(Pinos::LeftActionButton);
-  RightActionButton.configure(Pinos::RightActionButton);
+  LeftSignalButton.configure(Pinout::LeftTurnButtonPin);
+  RightSignalButton.configure(Pinout::RightTurnButtonPin);
+  ModeButton.configure(Pinout::ModeButtonPin);
+  BrakeSensor.configure(Pinout::BrakeSensorPin);
+  HornButton.configure(Pinout::HornButtonPin);
 
-  policiafreio.configure(Pinos::LeftRed, Pinos::Blue, Pinos::RightRed);
-  headLight.configure(Pinos::HeadLight);
-  turnSignals.configure(Pinos::LeftSignal, Pinos::RightSignal, Pinos::Buzzer);
-
-
-  //Serial.begin(9600);
-
-  //policiafreio.policeOn();
+  policeBrakeLight.configure(Pinout::TailRedLeftPin, Pinout::TailBluePin, Pinout::TailRedRightPin);
+  headLight.configure(Pinout::HeadLightPin);
+  turnSignals.configure(Pinout::LeftSignalPin, Pinout::RightSignalPin, Pinout::BuzzerPin);
 }
+
+
 
 
 
@@ -80,13 +69,14 @@ void input()
 {
   LeftSignalButton.run();
   RightSignalButton.run();
-  LeftActionButton.run();
-  RightActionButton.run();
+  ModeButton.run();
+  BrakeSensor.run();
+  HornButton.run();
 }
 
 void process()
 {
-  processaFarolPoliciaFreio();
+  processHeadLightPoliceBrake();
   processTurnSignals();	
 }
 
@@ -94,24 +84,13 @@ void output()
 {
   turnSignals.run();
   headLight.run();
-  policiafreio.run();
+  policeBrakeLight.run();
 }
 
-
-
-
-void processaFarolPoliciaFreio() {
-
-  if (LeftSignalButton.isPressed)
-    policiafreio.brake();
-  else {
-    processaFarolPolicia();
-  }
-}
 
 void processTurnSignals() {
   if (RightSignalButton.wasPressed) {
-    if (RightActionButton.isPressed) {
+    if (LeftSignalButton.isPressed) {
       turnSignals.toggleBoth();
     }
     else {
@@ -119,7 +98,7 @@ void processTurnSignals() {
     }
   }
 
-  if (RightActionButton.wasPressed) {
+  if (LeftSignalButton.wasPressed) {
     if (RightSignalButton.isPressed) {
       turnSignals.toggleBoth();
     }
@@ -129,25 +108,32 @@ void processTurnSignals() {
   }  
 }
 
-void processaFarolPolicia() {
-  if (LeftActionButton.wasLongPressed) {
+
+void processHeadLightPoliceBrake() {
+  if (BrakeSensor.isPressed)
+    policeBrakeLight.brake();
+  else {
+    processHeadlightPolice();
+  }
+}
+
+void processHeadlightPolice() {
+  if (ModeButton.wasLongPressed) {
     switch (_mode) {
       case LIGHTS:
         policeMode();
         break;
     }
   }
-  else if (LeftActionButton.wasReleased) {
+  else if (ModeButton.wasReleased) {
     switch (_mode) {
-      case FAROL_OFF:
+      case POLICE:
+      case LIGHTS_OFF:
         lightsMode();
-        break;
+        break;        
       case LIGHTS:
         offMode();
         break;
-      case POLICE:
-        lightsMode();
-        break;        
     }
   }
 }
@@ -155,17 +141,17 @@ void processaFarolPolicia() {
 void policeMode() {
   _mode = POLICE;
   headLight.flash();
-  policiafreio.policeOn();
+  policeBrakeLight.policeOn();
 }
 
 void lightsMode() {
   _mode = LIGHTS;
   headLight.on();
-  policiafreio.tailOn();
+  policeBrakeLight.tailOn();
 }
 
 void offMode() {
-  _mode = FAROL_OFF;
+  _mode = LIGHTS_OFF;
   headLight.off();
-  policiafreio.off();  
+  policeBrakeLight.off();  
 }
