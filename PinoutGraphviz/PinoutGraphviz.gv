@@ -1,0 +1,127 @@
+digraph g {
+
+rankdir = "RL"
+
+subgraph pintypes {
+    node [shape="polygon" style="filled" fillcolor="#88ee88"]
+
+    interrupts
+    i2c
+    pwm
+    analogIn
+    digital [label="Digital I/O"]
+}
+
+/*
+subgraph pins {
+    node [shape="rectangle" style="filled" fillcolor="#aaaacc"]
+
+    p0
+    p1
+    p2
+    p3
+    p4
+    p5
+    p6
+    p7
+    p8
+    p9
+    p10
+    p11
+    p12
+    p13
+    a0
+    a1
+    a2
+    a3
+    a4
+    a5
+}
+*/
+
+//digital -> analogIn -> pwm -> i2c -> interrupts
+
+interrupts -> i2c -> pwm -> analogIn -> digital
+
+{p2 p3} -> interrupts
+
+{a4 a5} -> i2c
+
+{p3 p5 p6 p9 p10 p11} -> pwm
+
+{a0 a1 a2 a3 a4 a5} -> analogIn
+
+// FEATURES
+
+subgraph features {
+    node [style="filled" fillcolor="#ffaaaa"]
+
+    TailLight
+    HeadLight
+    BrakeSensor
+    TurnSignals
+    Horn
+    Modes
+    Police
+    Display
+    Speed
+    Luminosity
+    Beep
+    StatusLed
+}
+
+StatusLed -> Beep -> Luminosity -> Speed -> Display -> Police -> Modes -> Horn -> TurnSignals -> BrakeSensor -> HeadLight -> TailLight
+
+{tailLeft tailRight} -> TailLight
+{head -> HeadLight}
+{bs} -> BrakeSensor
+{ls rs lb rb} -> TurnSignals
+{hb sp} -> Horn
+{mb} -> Modes
+{bl} -> Police
+{dispsda dispscl} -> Display
+{speed} -> Speed
+{lum} -> Luminosity
+{bz} -> Beep
+{st} -> StatusLed
+
+
+
+// SEMANTIC PINS
+
+tailLeft [label="TailRedLeft"]
+tailRight [label="TailRedRight"]
+
+head [label="HeadLight"]
+
+bs [label="BrakeSensor"]
+
+ls [label="LeftSignal"]
+rs [label="RightSignal"]
+lb [label="LeftTurnButton"]
+rb [label="RightTurnButton"]
+
+hb [label="HornButton"]
+sp [label="Siren"]
+
+mb [label="ModeButton"]
+
+bl [label="TailBlue"]
+
+dispsda [label="Display(SDA)"]
+dispscl [label="Display(SCL)"]
+
+speed [label="SpeedSensor"]
+
+lum [label="LightSensor"]
+
+bz [label="BuzzerPin"]
+
+st [label="StatusLed"]
+
+
+st -> p13
+dispsda -> a4
+dispscl -> a5
+
+}
