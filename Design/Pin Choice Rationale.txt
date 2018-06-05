@@ -1,0 +1,22 @@
+We have a finite number of pins for each use in the Arduino UNO, and so we need to have a strategy to choose the most important pin types first.
+
+Then, it is important to determine HOW MUCH OF EACH type our application is going to need. 
+
+So here are the most important types of each use, and the CANDIDATES uses for each:
+
+  - Interrupts:
+    - Speed meter (from hub generator);
+  - I2C
+    - Display OLED
+  - PWM
+    - Headlight
+    - Left Turn
+    - Right Turn
+    - Red Tail Left
+    - Red Tail Right
+  - Analog in
+    - Light sensor
+    - Battery sensor
+  - Digital Out
+  - Digital In  
+
